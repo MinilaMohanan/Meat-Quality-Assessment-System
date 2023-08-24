@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Food Quality Assessment</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <div class="margin">
+            <div id="prediction-result" class="result center"></div>
+            <div id="prediction-image" class="result center">
+                <h3>Upload Image of Apple</h3>
+                <img id="uploaded-image" src="" alt="Uploaded Image">
+            </div>
+        </div>
+        <div class="message" id="message-container"></div>
+        <ul id="benefits-list" style="display: none;">
+            <li>Meat and poultry are great sources of protein. They also provide
+                 lots of other nutrients your body needs,like iodine, iron, zinc,
+                 vitamins (especially B12) and essential fatty acids.</li>
+            <li>Iodine to help your body produce thyroid hormone.</li>
+            <li>Iron to carry oxygen around your body.</li> 
+            <li>Zinc to keep your immune system strong, your skin healthy,
+                 and for growth, development and reproductive health.</li>  
+            <li>Vitamin B12 for your nervous system. </li>
+            <li>Omega 3 to support heart and brain health.</li>          
+        </ul>
+        <script>
+            function displayPrediction() {
+                var prediction = JSON.parse(sessionStorage.getItem('prediction'));
+
+                if (!prediction) {
+                    // If there is no prediction, redirect back to the first page
+                    window.location.href = '4-1st.html';
+                    return;
+                }
+
+
+                var resultDiv = document.getElementById('prediction-result');
+                var imageDiv = document.getElementById('prediction-image');
+                var messageContainer = document.getElementById('message-container');
+                var benefitsList = document.getElementById('benefits-list');
+
+                // Clear previous results
+                resultDiv.innerHTML = '';
+                imageDiv.innerHTML = '';
+                messageContainer.innerHTML = '';
+                
+
+                // Display the heading "predicted disease"
+                var Header = document.createElement('h3');
+                Header.textContent = 'It is :';
+                resultDiv.appendChild(Header);
+
+                //Display the prediction
+                var Name = document.createElement('p');
+                Name.textContent = prediction.food;
+                resultDiv.appendChild(Name);
+
+                // Display the message based on the predicted food
+                var messageText;
+                var messageClass;
+                if (prediction.food == "Fresh") {
+                    messageText = "This is Fresh.";
+                    messageClass = "eat-message";
+                    benefitsList.style.display = 'block'; // Show the benefits section
+                } else if(prediction.food == "Spoiled"){
+                    messageText = "Oops! It's not Fresh.";
+                    messageClass = "not-eat-message";
+                    benefitsList.style.display = 'none'; // Show the benefits section
+                } else {
+                    messageText = "Oops! It's Not meat. Please Upload The Image of meat.";
+                    benefitsList.style.display = 'none'; // Hide the benefits section
+                }
+
+                var messageSpan = document.createElement('span');
+                messageSpan.textContent = messageText;
+                messageSpan.classList.add(messageClass);
+                messageContainer.appendChild(messageSpan);
+
+                // Add a class to the prediction food element for styling
+                Name.classList.add('prediction-food');
+
+                // Verify Base64 Image Data
+                var base64ImageData = prediction.image;
+                var image = new Image();
+                image.src = 'data:image/jpeg;base64,' + base64ImageData;
+                image.style.maxWidth = '300px';
+                image.style.marginTop = '20px';
+                imageDiv.appendChild(image);
+                //console.log('Image source:', image.src); // Log the image source
+            }
+            
+            // Call the displayPrediction() function when the page loads
+            window.onload = displayPrediction;   
+        </script>
+    </body>
+</html>
+
