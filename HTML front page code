@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Food Quality Assessment</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <h1>Good Food Healthy Life !</h1>
+        <center><h5>Meat Quality Assessment</h5></center>
+        <section>
+            <h2 >Assess the quality of your food using our innovative tools and methods.And this helps to determine the food quality .</h2>
+        </section>
+        <div class="container">
+            <fieldset>
+                <legend>Upload Your Image</legend>
+                <center>
+                    <input  type="file" id="image-input" accept="image/*" required onchange="displayImage(event)">
+                    <button onclick="predict()">Submit</button>
+                </center>
+                <center>
+                    <img id="input-image" src="#" style="max-width: 200px; max-height: 200px;">
+                </center> 
+            </fieldset>
+            <legend>You can upload .jpg , .png , .jpeg image of meat only.</legend>
+        </div>
+        </div>
+        <script>
+            function displayImage(event) {
+                var fileInput = document.getElementById('image-input');
+                var file = fileInput.files[0];
+                var reader = new FileReader();
+      
+                reader.onload = function(event) {
+                    var imageData = event.target.result;
+                    document.getElementById('input-image').src = imageData;
+                };
+      
+                reader.readAsDataURL(file);
+            }
+            function predict() {
+                // Clear previous results
+                sessionStorage.removeItem('prediction');
+
+                // Get the uploaded image file
+                var fileInput = document.getElementById('image-input');
+                var file = fileInput.files[0];
+
+                // Create a FormData object to send the file
+                var formData = new FormData();
+                formData.append('image', file);
+
+                // Send a POST request to the backend API
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', 'http://127.0.0.1:5000/api/predict', true);
+                xhr.onload = function () {
+                    //console.log('Response status:', xhr.status);
+                    //console.log('Response:', xhr.responseText);
+                    if (xhr.status === 200) {
+                        var response = JSON.parse(xhr.responseText);
+                        //console.log('Prediction response:', response);
+                        sessionStorage.setItem('prediction', JSON.stringify(response));
+                        window.location.href = '2nd_page.html'
+                    }
+                };
+
+                // Send the form data
+                xhr.send(formData);
+            }
+        </script>
+    </body>
+</html>
+
